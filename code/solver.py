@@ -11,6 +11,7 @@ from datetime import datetime
 import math
 import copy
 import time
+import logging
 
 # Change the dimentions and number of palettes
 main_palettes_dim = [
@@ -42,6 +43,14 @@ class PalettesStackingSolver:
     self.final_temp = 0.05
     self.iter_num = 1000
     self.cool_factor = 0.98
+    
+    self.log = logging.getLogger(__name__)
+    self.log.setLevel(logging.INFO)
+    
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    
+    self.log.addHandler(ch)
 
     
   # Setters
@@ -130,39 +139,46 @@ class PalettesStackingSolver:
     return total_length
     
   def accept_worse(self, curr_state_weight, old_state_weight, temp):
-    delta = abs(old_state_weight - curr_state_weight)
-    accept_prob = 1 / (1 + math.exp( delta / temp))
+    if temp == 0:
+      return False
     
-    return random.uniform(0, 1) < accept_prob
+    # delta = abs(old_state_weight - curr_state_weight)
+    # accept_prob = 1 / (1 + math.exp( delta / temp))
+    
+    # normalise the weights
+    eps =  old_state_weight - curr_state_weight
+    return random.uniform(0, 1) < math.exp(- (eps) / temp)
+    # return random.uniform(0, 1) < accept_prob
     
   def sim_ann(self):    
     # Initialize the order of palettes [0, 1 .. n]
-    top_state = list(range(self.palettesNum))
+    top_state = list(range(self.palettes_num))
     top_state_weight = self.get_weight(top_state)
     
     # Prepare the temperature
     steps_count = 0
     res_num = 0
-    temp = self.get_weights_standard_deviation(self.get_n_weights(200, top_state))
+    temp = self.get_weights_standard_deviation(self.get_n_weights(666, top_state))
     
     # Initialize the current state
     curr_state = copy.deepcopy(top_state)
-    curr_state_weight = self.get_weight(curr_state)
+    curr_state_weight = top_state_weight
     
     # start the annealing
-    while t > self.final_temp:
+    while temp > self.final_temp:
       
       # repeat the selection for this temperature
       for _ in range(0, self.iter_num):
-        new_state = self.get_ranom_neighbour(curr_state)
+        new_state = self.get_random_neighbour(curr_state)
         new_state_weight = self.get_weight(new_state)
         
         # update the best state
         if top_state_weight < new_state_weight:
           top_state = new_state
+          top_state_weight = new_state_weight
         
         # Decide wheter to accept or not
-        if new_state_weight < curr_state_weight or self.accept_worse(new_state_weight, curr_state_weight, temp):
+        if new_state_weight <= curr_state_weight or self.accept_worse(new_state_weight, curr_state_weight, temp):
           # increase the number of results
           res_num += 1
           # store the new state
