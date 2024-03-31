@@ -16,7 +16,7 @@ import logging
 # Change the dimentions and number of palettes
 main_palettes_dim = [
   [150, 110],
-  [125, 85],
+  [85, 125],
   [125, 105],
   [125, 115],
   [125, 120],
@@ -28,12 +28,23 @@ main_palettes_dim = [
 ]
 
 # The palettes stacting solver - simulated annealing
+class PalettesState:
+  def __init__(self, *args):
+    if len(args) == 3:
+      self.palettes = args[0]
+      self.weight = args[1]
+      self.orientation = args[2]
+    if len(args) == 1:
+      self.palettes = copy.deepcopy(args[0].palettes)
+      self.weight = args[0].weight
+      self.orientation = copy.deepcopy(args[0].orientation)
+    
+    
 class PalettesStackingSolver:
   def __init__(self, palettes_dim):  
     self.truck_width = 240
     self.palettes_dim = palettes_dim
     self.palettes_num = len(palettes_dim)
-    self.palettes_rotation = [0] * self.palettes_num
   
     # simulated annealing params
     random.seed(datetime.now().timestamp())
@@ -41,8 +52,8 @@ class PalettesStackingSolver:
     # Algorithm params
     self.init_temp = 50.0
     self.final_temp = 0.05
-    self.iter_num = 1000
-    self.cool_factor = 0.98
+    self.iter_num = 150
+    self.cool_factor = 0.95
     
     self.log = logging.getLogger(__name__)
     self.log.setLevel(logging.INFO)
@@ -95,27 +106,32 @@ class PalettesStackingSolver:
   # - - - - - - - - - - - - - - - - - - - -
   
   def get_random_neighbour(self, state):
-    new_state = copy.deepcopy(state)
+    new_state = PalettesState(state)
     
     # with small chance of full permutation
     if (random.random() < 0.1):
-      return random.sample(new_state, k=len(new_state))
+      new_state.palettes = random.sample(new_state.palettes, k=len(new_state.palettes))
+      new_state.weight = self.get_weight(new_state)
+      return new_state
     
     # chose two palletes to swap 
-    f_palette_i = random.randint(0, len(state) - 1)
-    f_palette = new_state[f_palette_i]
+    f_palette_i = random.randint(0, len(state.palettes) - 1)
+    f_palette = new_state.palettes[f_palette_i]
     
-    s_palette_i = random.randint(0, len(state) - 1)
+    s_palette_i = random.randint(0, len(state.palettes) - 1)
     while f_palette_i == s_palette_i:
-      s_palette_i = random.randint(0, len(state) - 1)
-    s_palette = new_state[s_palette_i]
+      s_palette_i = random.randint(0, len(state.palettes) - 1)
+    s_palette = new_state.palettes[s_palette_i]
     
     #swap
-    new_state[f_palette_i] = s_palette
-    new_state[s_palette_i] = f_palette
+    new_state.palettes[f_palette_i] = s_palette
+    new_state.palettes[s_palette_i] = f_palette
     
     # rotate randomly - in future - depends on how well the unrotated will perform
+    rand_i = random.randint(0, len(state.orientation) - 1)
+    new_state.orientation[rand_i] = (new_state.orientation[rand_i] + 1) % 2
     
+    new_state.weight = self.get_weight(new_state)
     return new_state
     
   """
@@ -123,18 +139,23 @@ class PalettesStackingSolver:
   """
   def get_weight(self, state):
     total_length = 0
-    for i in range(0, len(state), 2):
-      # par_length_1 = self.palettes_rotation[i]
-      # par_length_2 = self.palettes_rotation[i + 1]
+    for i in range(0, len(state.palettes), 2):
+      width_1 = state.orientation[i]
+      length_1 = (state.orientation[i] + 1) % 2
       
-      if i == (len(state) - 1):
+      
+      if i == (len(state.palettes) - 1):
         # if it's the last one
-        total_length += self.palettes_dim[state[i]][1]
-      elif (self.palettes_dim[state[i]][0] + self.palettes_dim[state[i + 1]][0] > self.truck_width):
+        total_length += self.palettes_dim[state.palettes[i]][length_1]
+        continue
+      
+      width_2 = state.orientation[i + 1]
+      length_2 = (state.orientation[i + 1] + 1) % 2
+      if (self.palettes_dim[state.palettes[i]][width_1] + self.palettes_dim[state.palettes[i + 1]][width_2] > self.truck_width):
         # if they are too wide, sum their length
-        total_length += self.palettes_dim[state[i]][1] + self.palettes_dim[state[i + 1]][1]
+        total_length += self.palettes_dim[state.palettes[i]][length_1] + self.palettes_dim[state.palettes[i + 1]][length_2]
       else:
-        total_length += max(self.palettes_dim[state[i]][1], self.palettes_dim[state[i + 1]][1])
+        total_length += max(self.palettes_dim[state.palettes[i]][length_1], self.palettes_dim[state.palettes[i + 1]][length_2])
     
     return total_length
     
@@ -147,22 +168,30 @@ class PalettesStackingSolver:
     
     # normalise the weights
     eps =  old_state_weight - curr_state_weight
-    return random.uniform(0, 1) < math.exp(- (eps) / temp)
+    
+    try: 
+      return random.uniform(0, 1) < 1 / (1 + math.exp(abs(eps) / temp))
+    except:
+      return False
     # return random.uniform(0, 1) < accept_prob
     
   def sim_ann(self):    
     # Initialize the order of palettes [0, 1 .. n]
-    top_state = list(range(self.palettes_num))
-    top_state_weight = self.get_weight(top_state)
-    
+    top_palettes = list(range(self.palettes_num))
+    top_state = PalettesState(
+      top_palettes, 
+      0,
+      [0] * self.palettes_num
+      )
+    top_state.weight = self.get_weight(top_state)
+
     # Prepare the temperature
     steps_count = 0
     res_num = 0
     temp = self.get_weights_standard_deviation(self.get_n_weights(666, top_state))
     
     # Initialize the current state
-    curr_state = copy.deepcopy(top_state)
-    curr_state_weight = top_state_weight
+    curr_state = PalettesState(top_state)
     
     # start the annealing
     while temp > self.final_temp:
@@ -170,38 +199,36 @@ class PalettesStackingSolver:
       # repeat the selection for this temperature
       for _ in range(0, self.iter_num):
         new_state = self.get_random_neighbour(curr_state)
-        new_state_weight = self.get_weight(new_state)
         
         # update the best state
-        if top_state_weight < new_state_weight:
+        if top_state.weight < new_state.weight:
           top_state = new_state
-          top_state_weight = new_state_weight
         
         # Decide wheter to accept or not
-        if new_state_weight <= curr_state_weight or self.accept_worse(new_state_weight, curr_state_weight, temp):
+        if new_state.weight <= curr_state.weight or self.accept_worse(new_state.weight, curr_state.weight, temp):
           # increase the number of results
           res_num += 1
           # store the new state
           curr_state = new_state
-          curr_state_weight = new_state_weight
         
-          self.log.critical("{} {} {} {}".format(res_num, steps_count, temp, curr_state_weight))
+          self.log.critical("{} {} {} {}".format(res_num, steps_count, temp, curr_state.weight))
 
       # decreas the temperature
       temp *= self.cool_factor
       
       steps_count += 1
     
-    return top_state, top_state_weight, steps_count    
+    return top_state, steps_count    
     
   def run(self):
     start_time = time.time()
-    top_state, top_state_weight, steps_count = self.sim_ann()
+    top_state, steps_count = self.sim_ann()
     duration = time.time() - start_time
     
     print("{} {} {}".format(
-      top_state_weight, steps_count, duration))
-    print(top_state)
+      top_state.weight, steps_count, duration))
+    print(top_state.palettes)
+    print(top_state.orientation)
     
 
 if __name__ == "__main__":
