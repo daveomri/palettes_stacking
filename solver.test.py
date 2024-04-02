@@ -60,7 +60,7 @@ class TestPalettesStackingSolver(unittest.TestCase):
     )
     state.weight = solver.get_weight(state)
     
-    self.assertEqual(460, state.weight)
+    self.assertEqual(490, state.weight)
     
   def test_get_weight2(self):
     solver = PalettesStackingSolver(pal2)
@@ -71,7 +71,7 @@ class TestPalettesStackingSolver(unittest.TestCase):
     )
     state.weight = solver.get_weight(state)
     
-    self.assertEqual(460, state.weight)
+    self.assertEqual(400, state.weight)
     
   def test_get_n_weights1(self):
     solver = PalettesStackingSolver(pal1)

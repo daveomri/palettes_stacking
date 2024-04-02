@@ -139,23 +139,34 @@ class PalettesStackingSolver:
   """
   def get_weight(self, state):
     total_length = 0
-    for i in range(0, len(state.palettes), 2):
-      width_1 = state.orientation[state.palettes[i]]
-      length_1 = (state.orientation[state.palettes[i]] + 1) % 2
+    curr_palette = 0
+    while curr_palette != len(state.palettes):
+      width_1 = state.orientation[state.palettes[curr_palette]]
+      length_1 = (width_1 + 1) % 2
       
-      
-      if i == (len(state.palettes) - 1):
+      if curr_palette == (len(state.palettes) - 1):
         # if it's the last one
-        total_length += self.palettes_dim[state.palettes[i]][length_1]
-        continue
+        total_length += self.palettes_dim[state.palettes[curr_palette]][length_1]
+        break
       
-      width_2 = state.orientation[state.palettes[i + 1]]
-      length_2 = (state.orientation[state.palettes[i + 1]] + 1) % 2
-      if (self.palettes_dim[state.palettes[i]][width_1] + self.palettes_dim[state.palettes[i + 1]][width_2] > self.truck_width):
-        # if they are too wide, sum their length
-        total_length += self.palettes_dim[state.palettes[i]][length_1] + self.palettes_dim[state.palettes[i + 1]][length_2]
-      else:
-        total_length += max(self.palettes_dim[state.palettes[i]][length_1], self.palettes_dim[state.palettes[i + 1]][length_2])
+      width_sum   = self.palettes_dim[state.palettes[curr_palette]][width_1]
+      curr_length = self.palettes_dim[state.palettes[curr_palette]][length_1]
+      next_palette = curr_palette + 1
+      while next_palette < len(state.palettes):
+        width_j = state.orientation[state.palettes[next_palette]]
+        length_j = (width_j + 1) % 2
+        
+        width_sum += self.palettes_dim[state.palettes[next_palette]][width_j]
+        
+        if width_sum > self.truck_width:
+          # if they are too wide, sum their length
+          break
+        else:
+          curr_length = max(curr_length, self.palettes_dim[state.palettes[next_palette]][length_j])
+        next_palette += 1
+          
+      curr_palette = next_palette
+      total_length += curr_length
     
     return total_length
     
