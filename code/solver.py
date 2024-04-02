@@ -16,7 +16,7 @@ import logging
 # Change the dimentions and number of palettes
 main_palettes_dim = [
   [150, 110],
-  [85, 125],
+  [125, 85],
   [125, 105],
   [125, 115],
   [125, 120],
@@ -140,8 +140,8 @@ class PalettesStackingSolver:
   def get_weight(self, state):
     total_length = 0
     for i in range(0, len(state.palettes), 2):
-      width_1 = state.orientation[i]
-      length_1 = (state.orientation[i] + 1) % 2
+      width_1 = state.orientation[state.palettes[i]]
+      length_1 = (state.orientation[state.palettes[i]] + 1) % 2
       
       
       if i == (len(state.palettes) - 1):
@@ -149,8 +149,8 @@ class PalettesStackingSolver:
         total_length += self.palettes_dim[state.palettes[i]][length_1]
         continue
       
-      width_2 = state.orientation[i + 1]
-      length_2 = (state.orientation[i + 1] + 1) % 2
+      width_2 = state.orientation[state.palettes[i + 1]]
+      length_2 = (state.orientation[state.palettes[i + 1]] + 1) % 2
       if (self.palettes_dim[state.palettes[i]][width_1] + self.palettes_dim[state.palettes[i + 1]][width_2] > self.truck_width):
         # if they are too wide, sum their length
         total_length += self.palettes_dim[state.palettes[i]][length_1] + self.palettes_dim[state.palettes[i + 1]][length_2]
