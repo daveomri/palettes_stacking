@@ -52,7 +52,7 @@ class PalettesStackingSolver:
     # Algorithm params
     self.init_temp = 50.0
     self.final_temp = 0.05
-    self.iter_num = 150
+    self.iter_num = 999 # force
     self.cool_factor = 0.95
     
     self.log = logging.getLogger(__name__)
