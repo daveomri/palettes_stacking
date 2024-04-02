@@ -1,11 +1,17 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, url_for, redirect
 
 views = Blueprint(__name__, "views")
 
-@views.route("/")
+@views.route("/", methods=["GET", "POST"])
 def home():
-    return render_template("index.html")
+    if request.method == "GET":
+        return render_template("index.html")
+    else:
+        return "Wrong wrong my dear"
 
-@views.route("/results")
+@views.route("/results", methods=["POST"])
 def results():
-    return render_template("results.html")
+    if request.method == "POST":
+        return render_template("results.html", plan=request.form["palettes"])
+    else:
+        return "There is nothing"
