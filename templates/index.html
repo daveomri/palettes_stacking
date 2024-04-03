@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palettes stacking planner</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palettes stacking planner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
 </head>
 <body>
-    <script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
-    <div>
-        {% block content %}
-        <h1>Palettes stacting planner input</h1>
-        <form action="/results" method="post" id="palettes-form">
-            <h1>codewithFaraz</h1>
-            <div class="container">
-              <form action="" method="POST">
-                    <div id="formfield">
-                        <input type="text" name="palettes" class="text" size="50" placeholder="Palette 1" required>
-                    </div>
-                    <input name="submit" type="Submit" value="Submit">
-                </form>
-              <div class="controls">
-                <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add</button>
-                <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove</button>
-              </div>
-        </form>
-        {% endblock %}
+  <script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
+  <div>
+    {% block content %}
+    <h1>Palettes stacting planner input</h1>
+    <div class="container">
+      <form action="/results" method="post" id="palettes-form">
+          <div id="formfield">
+            <input type="text" name="palette-1" class="text" size="50" placeholder="Palette 1" required>
+          </div>
+          <input name="submit" type="Submit" value="Submit" id="submit">
+      </form>
+      <div class="controls">
+        <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add</button>
+        <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove</button>
+      </div>
     </div>
+    {% endblock %}
+  </div>
 </body>
 </html>
