@@ -9,21 +9,28 @@
 <body>
   <script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
   <div>
-    {% block content %}
-    <h1>Palettes stacting planner input</h1>
+    <h1>Palettes stacking planner input</h1>
     <div class="container">
-      <form action="/results" method="post" id="palettes-form">
-          <div id="formfield">
-            <input type="text" name="palette-1" class="text" size="50" placeholder="Palette 1" required>
-          </div>
-          <input name="submit" type="Submit" value="Submit" id="submit">
-      </form>
       <div class="controls">
         <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add</button>
         <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove</button>
       </div>
+      <form action="#" method="post" id="palettes-form">
+          <div id="formfield">
+            <div class="formfield-row">
+              <p>Palette 1</p>
+              <input type="number" name="palette-1-left" class="palette-left" min="0" placeholder="width" required>
+              <input type="number" name="palette-1-right" class="palette-right" min="0" placeholder="length" required>
+            </div>
+          </div>
+          <input name="submit" type="Submit" value="Submit" id="submit">
+      </form>
     </div>
-    {% endblock %}
+    {% if results != '' %}
+      <div class="ouput">
+        {{ results }}
+      </div>
+    {% endif %}
   </div>
 </body>
 </html>

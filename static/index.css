@@ -1,0 +1,34 @@
+.controls {
+    margin-bottom: 1em;
+}
+
+#submit {
+    margin-top: 1.5em;
+}
+
+#formfield {
+    width: 50em;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.formfield-row {
+    width: 100%;
+    margin-top: 0.5em;
+}
+
+.formfield-row p {
+    width: 100%;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+.palette-right {
+    margin: 0.25em;
+    margin-right: 0em;
+}
+
+.palette-left {
+    margin: 0.25em;
+    margin-left: 0em;
+}
