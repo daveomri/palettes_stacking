@@ -229,7 +229,7 @@ class PalettesStackingSolver:
       
       steps_count += 1
     
-    return top_state, steps_count
+    return top_state
     
     
   def to_string(self, state):
@@ -250,16 +250,13 @@ class PalettesStackingSolver:
     return output
     
   def run(self):
-    start_time = time.time()
-    top_state, steps_count = self.sim_ann()
-    duration = time.time() - start_time
-    
+    if (self.palettes_num == 1):
+      return 'One palette'
+    return self.to_string(self.sim_ann())
     # print("{} {} {}".format(
     #   top_state.weight, steps_count, duration))
     # print(top_state.palettes)
     # print(top_state.orientation)
-    
-    print(self.to_string(top_state))
     
 
 if __name__ == "__main__":
