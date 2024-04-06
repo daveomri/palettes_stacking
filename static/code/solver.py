@@ -52,7 +52,7 @@ class PalettesStackingSolver:
     # Algorithm params
     self.init_temp = 50.0
     self.final_temp = 0.05
-    self.iter_num = 999 # force
+    self.iter_num = self.palettes_num * 90 # force
     self.cool_factor = 0.95
     
     self.log = logging.getLogger(__name__)
@@ -212,7 +212,7 @@ class PalettesStackingSolver:
         new_state = self.get_random_neighbour(curr_state)
         
         # update the best state
-        if top_state.weight < new_state.weight:
+        if top_state.weight > new_state.weight:
           top_state = new_state
         
         # Decide wheter to accept or not
@@ -222,24 +222,44 @@ class PalettesStackingSolver:
           # store the new state
           curr_state = new_state
         
-          self.log.critical("{} {} {} {}".format(res_num, steps_count, temp, curr_state.weight))
+          # self.log.critical("{} {} {} {}".format(res_num, steps_count, temp, curr_state.weight))
 
       # decreas the temperature
       temp *= self.cool_factor
       
       steps_count += 1
     
-    return top_state, steps_count    
+    return top_state, steps_count
+    
+    
+  def to_string(self, state):
+    output = "length: {}\n[".format(state.weight)
+    curr_length = 0
+    for i in range(0, len(state.palettes)):
+      p_id = state.palettes[i]
+      p_rot = state.orientation[p_id]
+      rot_sym = 'r' if p_rot == 1 else ''
+      if curr_length + self.palettes_dim[p_id][p_rot] >= self.truck_width:
+        curr_length = self.palettes_dim[p_id][p_rot]
+        output = '{} ]\n[ {}{}'.format(output, p_id + 1, rot_sym)
+      else:
+        curr_length += self.palettes_dim[p_id][p_rot]
+        output = '{} {}{}'.format(output, p_id + 1, rot_sym)
+    output = '{} ]\n'.format(output)
+    
+    return output
     
   def run(self):
     start_time = time.time()
     top_state, steps_count = self.sim_ann()
     duration = time.time() - start_time
     
-    print("{} {} {}".format(
-      top_state.weight, steps_count, duration))
-    print(top_state.palettes)
-    print(top_state.orientation)
+    # print("{} {} {}".format(
+    #   top_state.weight, steps_count, duration))
+    # print(top_state.palettes)
+    # print(top_state.orientation)
+    
+    print(self.to_string(top_state))
     
 
 if __name__ == "__main__":
