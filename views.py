@@ -8,12 +8,12 @@ views = Blueprint(__name__, "views")
 def home():
   if request.method == "GET":
     
-    return render_template("index.html", results='')
+    return render_template("index.html", hasResults=False)
   else:
     form_arr = form_to_array(request.form)
     solver = PalettesStackingSolver(form_arr)
     result, length = solver.run()
-    return render_template("index.html", results=result, length=length, form_arr=form_arr)
+    return render_template("index.html", hasResults=True, results=result, length=length, form_arr=form_arr)
       
 def form_to_array(form):
   result = []
