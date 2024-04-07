@@ -11,7 +11,7 @@ from datetime import datetime
 import math
 import copy
 import time
-import logging
+# import logging
 
 # Change the dimentions and number of palettes
 main_palettes_dim = [
@@ -55,13 +55,13 @@ class PalettesStackingSolver:
     self.iter_num = self.palettes_num * 90 # force
     self.cool_factor = 0.95
     
-    self.log = logging.getLogger(__name__)
-    self.log.setLevel(logging.INFO)
+    # self.log = logging.getLogger(__name__)
+    # self.log.setLevel(logging.INFO)
     
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
+    # ch = logging.StreamHandler()
+    # ch.setLevel(logging.INFO)
     
-    self.log.addHandler(ch)
+    # self.log.addHandler(ch)
 
     
   # Setters
