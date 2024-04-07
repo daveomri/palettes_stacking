@@ -131,7 +131,12 @@ class PalettesStackingSolver:
     rand_i = random.randint(0, len(state.orientation) - 1)
     new_state.orientation[rand_i] = (new_state.orientation[rand_i] + 1) % 2
     
+    # Repair state
+    new_state = self.repair_state(new_state)
+    
+    # Set weight
     new_state.weight = self.get_weight(new_state)
+    
     return new_state
     
   """
@@ -169,6 +174,17 @@ class PalettesStackingSolver:
       total_length += curr_length
     
     return total_length
+  
+  def repair_state(self, state):
+    for i in range(0, len(state.palettes)):
+      rotation = state.orientation[i]
+      
+      if self.palettes_dim[i][rotation] > self.truck_width:
+        if self.palettes_dim[i][(rotation + 1) % 2] > self.truck_width:
+          return None
+        state.orientation[i] = (rotation + 1) % 2
+        
+    return state
     
   def accept_worse(self, curr_state_weight, old_state_weight, temp):
     if temp == 0:
@@ -194,6 +210,13 @@ class PalettesStackingSolver:
       0,
       [0] * self.palettes_num
       )
+    
+    # Repair state - or return None if cannot be repaired
+    top_state = self.repair_state(top_state)
+    
+    if top_state == None:
+      return None
+    
     top_state.weight = self.get_weight(top_state)
 
     # Prepare the temperature
@@ -232,31 +255,36 @@ class PalettesStackingSolver:
     return top_state
     
     
-  def to_string(self, state):
-    output = "length: {}\n[".format(state.weight)
+  def to_arr(self, state):
+    out_arr = list()
     curr_length = 0
+    curr_arr = list()
     for i in range(0, len(state.palettes)):
       p_id = state.palettes[i]
       p_rot = state.orientation[p_id]
       rot_sym = 'r' if p_rot == 1 else ''
       if curr_length + self.palettes_dim[p_id][p_rot] >= self.truck_width:
         curr_length = self.palettes_dim[p_id][p_rot]
-        output = '{} ]\n[ {}{}'.format(output, p_id + 1, rot_sym)
+        out_arr.append(curr_arr)
+        curr_arr = list()
+        curr_arr.append('{}{}'.format(p_id + 1, rot_sym))
       else:
+        curr_arr.append('{}{}'.format(p_id + 1, rot_sym))
         curr_length += self.palettes_dim[p_id][p_rot]
-        output = '{} {}{}'.format(output, p_id + 1, rot_sym)
-    output = '{} ]\n'.format(output)
     
-    return output
+    if len(curr_arr) != 0:
+      out_arr.append(curr_arr)
+      
+    return out_arr
     
   def run(self):
     if (self.palettes_num == 1):
-      return 'One palette'
-    return self.to_string(self.sim_ann())
-    # print("{} {} {}".format(
-    #   top_state.weight, steps_count, duration))
-    # print(top_state.palettes)
-    # print(top_state.orientation)
+      return None, None
+    top_state = self.sim_ann()
+    
+    if top_state == None:
+      return None, None
+    return self.to_arr(top_state), top_state.weight
     
 
 if __name__ == "__main__":

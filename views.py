@@ -10,8 +10,10 @@ def home():
     
     return render_template("index.html", results='')
   else:
-    solver = PalettesStackingSolver(form_to_array(request.form))
-    return render_template("index.html", results=solver.run())
+    form_arr = form_to_array(request.form)
+    solver = PalettesStackingSolver(form_arr)
+    result, length = solver.run()
+    return render_template("index.html", results=result, length=length, form_arr=form_arr)
       
 def form_to_array(form):
   result = []
