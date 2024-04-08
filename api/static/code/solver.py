@@ -10,7 +10,7 @@ import random
 from datetime import datetime
 import math
 import copy
-import time
+# import time
 # import logging
 
 # Change the dimentions and number of palettes
