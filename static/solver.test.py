@@ -1,5 +1,5 @@
 import unittest
-from code.solver import PalettesStackingSolver, PalettesState
+from code.solver import PalletsStackingSolver, PalletsState
 import numpy as np
 
 pal1 = [
@@ -19,11 +19,11 @@ pal2 = [
   [110, 120]
 ]
 
-class TestPalettesStackingSolver(unittest.TestCase):
+class TestPalletsStackingSolver(unittest.TestCase):
   
   def test_get_random_neighbour1(self):
-    solver = PalettesStackingSolver(pal1)
-    state = PalettesState(
+    solver = PalletsStackingSolver(pal1)
+    state = PalletsState(
       list(range(len(pal1))),
       0,
       [0] * len(pal1)
@@ -33,12 +33,12 @@ class TestPalettesStackingSolver(unittest.TestCase):
     neigh_state = solver.get_random_neighbour(state)
     
     self.assertIsNotNone(neigh_state)
-    self.assertEqual(len(state.palettes), len(neigh_state.palettes))
-    self.assertTrue(np.any(np.not_equal(state.palettes, neigh_state.palettes)))
+    self.assertEqual(len(state.pallets), len(neigh_state.pallets))
+    self.assertTrue(np.any(np.not_equal(state.pallets, neigh_state.pallets)))
     
   def test_get_random_neighbour2(self):
-    solver = PalettesStackingSolver(pal2)
-    state = PalettesState(
+    solver = PalletsStackingSolver(pal2)
+    state = PalletsState(
       list(range(len(pal2))),
       0,
       [0] * len(pal2)
@@ -48,12 +48,12 @@ class TestPalettesStackingSolver(unittest.TestCase):
     neigh_state = solver.get_random_neighbour(state)
     
     self.assertIsNotNone(neigh_state)
-    self.assertEqual(len(state.palettes), len(neigh_state.palettes))
-    self.assertTrue(np.any(np.not_equal(state.palettes, neigh_state.palettes)))
+    self.assertEqual(len(state.pallets), len(neigh_state.pallets))
+    self.assertTrue(np.any(np.not_equal(state.pallets, neigh_state.pallets)))
   
   def test_get_weight1(self):
-    solver = PalettesStackingSolver(pal1)
-    state = PalettesState(
+    solver = PalletsStackingSolver(pal1)
+    state = PalletsState(
       list(range(len(pal1))),
       0,
       [0] * len(pal1)
@@ -63,8 +63,8 @@ class TestPalettesStackingSolver(unittest.TestCase):
     self.assertEqual(490, state.weight)
     
   def test_get_weight2(self):
-    solver = PalettesStackingSolver(pal2)
-    state = PalettesState(
+    solver = PalletsStackingSolver(pal2)
+    state = PalletsState(
       list(range(len(pal2))),
       0,
       [0] * len(pal2)
@@ -74,8 +74,8 @@ class TestPalettesStackingSolver(unittest.TestCase):
     self.assertEqual(400, state.weight)
     
   def test_get_n_weights1(self):
-    solver = PalettesStackingSolver(pal1)
-    state = PalettesState(
+    solver = PalletsStackingSolver(pal1)
+    state = PalletsState(
       list(range(len(pal1))),
       0,
       [0] * len(pal1)
@@ -87,8 +87,8 @@ class TestPalettesStackingSolver(unittest.TestCase):
     self.assertEqual(20, len(weights), 'It is wrong')
     
   def test_get_n_weights2(self):
-    solver = PalettesStackingSolver(pal2)
-    state = PalettesState(
+    solver = PalletsStackingSolver(pal2)
+    state = PalletsState(
       list(range(len(pal2))),
       0,
       [0] * len(pal2)
@@ -100,8 +100,8 @@ class TestPalettesStackingSolver(unittest.TestCase):
     self.assertEqual(20, len(weights), 'It is wrong')
     
   def test_get_weights_standard_deviation(self):
-    solver = PalettesStackingSolver(pal2)
-    state = PalettesState(
+    solver = PalletsStackingSolver(pal2)
+    state = PalletsState(
       list(range(len(pal2))),
       0,
       [0] * len(pal2)

@@ -1,1 +1,1 @@
-# palettes_stacking
+# pallets_stacking

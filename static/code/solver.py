@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Palettes stacking solver
+# Pallets stacking solver
 # ---
 # by David Omrai
 # ---
@@ -13,8 +13,8 @@ import copy
 # import time
 # import logging
 
-# Change the dimentions and number of palettes
-main_palettes_dim = [
+# Change the dimentions and number of pallets
+main_pallets_dim = [
   [150, 110],
   [125, 85],
   [125, 105],
@@ -27,24 +27,24 @@ main_palettes_dim = [
   [140, 125]
 ]
 
-# The palettes stacting solver - simulated annealing
-class PalettesState:
+# The pallets stacting solver - simulated annealing
+class PalletsState:
   def __init__(self, *args):
     if len(args) == 3:
-      self.palettes = args[0]
+      self.pallets = args[0]
       self.weight = args[1]
       self.orientation = args[2]
     if len(args) == 1:
-      self.palettes = copy.deepcopy(args[0].palettes)
+      self.pallets = copy.deepcopy(args[0].pallets)
       self.weight = args[0].weight
       self.orientation = copy.deepcopy(args[0].orientation)
     
     
-class PalettesStackingSolver:
-  def __init__(self, palettes_dim):  
+class PalletsStackingSolver:
+  def __init__(self, pallets_dim):  
     self.truck_width = 240
-    self.palettes_dim = palettes_dim
-    self.palettes_num = len(palettes_dim)
+    self.pallets_dim = pallets_dim
+    self.pallets_num = len(pallets_dim)
   
     # simulated annealing params
     random.seed(datetime.now().timestamp())
@@ -52,7 +52,7 @@ class PalettesStackingSolver:
     # Algorithm params
     self.init_temp = 50.0
     self.final_temp = 0.05
-    self.iter_num = self.palettes_num * 90 # force
+    self.iter_num = self.pallets_num * 90 # force
     self.cool_factor = 0.95
     
     # self.log = logging.getLogger(__name__)
@@ -106,26 +106,26 @@ class PalettesStackingSolver:
   # - - - - - - - - - - - - - - - - - - - -
   
   def get_random_neighbour(self, state):
-    new_state = PalettesState(state)
+    new_state = PalletsState(state)
     
     # with small chance of full permutation
     if (random.random() < 0.1):
-      new_state.palettes = random.sample(new_state.palettes, k=len(new_state.palettes))
+      new_state.pallets = random.sample(new_state.pallets, k=len(new_state.pallets))
       new_state.weight = self.get_weight(new_state)
       return new_state
     
     # chose two palletes to swap 
-    f_palette_i = random.randint(0, len(state.palettes) - 1)
-    f_palette = new_state.palettes[f_palette_i]
+    f_pallet_i = random.randint(0, len(state.pallets) - 1)
+    f_pallet = new_state.pallets[f_pallet_i]
     
-    s_palette_i = random.randint(0, len(state.palettes) - 1)
-    while f_palette_i == s_palette_i:
-      s_palette_i = random.randint(0, len(state.palettes) - 1)
-    s_palette = new_state.palettes[s_palette_i]
+    s_pallet_i = random.randint(0, len(state.pallets) - 1)
+    while f_pallet_i == s_pallet_i:
+      s_pallet_i = random.randint(0, len(state.pallets) - 1)
+    s_pallet = new_state.pallets[s_pallet_i]
     
     #swap
-    new_state.palettes[f_palette_i] = s_palette
-    new_state.palettes[s_palette_i] = f_palette
+    new_state.pallets[f_pallet_i] = s_pallet
+    new_state.pallets[s_pallet_i] = f_pallet
     
     # rotate randomly - in future - depends on how well the unrotated will perform
     rand_i = random.randint(0, len(state.orientation) - 1)
@@ -144,43 +144,43 @@ class PalettesStackingSolver:
   """
   def get_weight(self, state):
     total_length = 0
-    curr_palette = 0
-    while curr_palette != len(state.palettes):
-      width_1 = state.orientation[state.palettes[curr_palette]]
+    curr_pallet = 0
+    while curr_pallet != len(state.pallets):
+      width_1 = state.orientation[state.pallets[curr_pallet]]
       length_1 = (width_1 + 1) % 2
       
-      if curr_palette == (len(state.palettes) - 1):
+      if curr_pallet == (len(state.pallets) - 1):
         # if it's the last one
-        total_length += self.palettes_dim[state.palettes[curr_palette]][length_1]
+        total_length += self.pallets_dim[state.pallets[curr_pallet]][length_1]
         break
       
-      width_sum   = self.palettes_dim[state.palettes[curr_palette]][width_1]
-      curr_length = self.palettes_dim[state.palettes[curr_palette]][length_1]
-      next_palette = curr_palette + 1
-      while next_palette < len(state.palettes):
-        width_j = state.orientation[state.palettes[next_palette]]
+      width_sum   = self.pallets_dim[state.pallets[curr_pallet]][width_1]
+      curr_length = self.pallets_dim[state.pallets[curr_pallet]][length_1]
+      next_pallet = curr_pallet + 1
+      while next_pallet < len(state.pallets):
+        width_j = state.orientation[state.pallets[next_pallet]]
         length_j = (width_j + 1) % 2
         
-        width_sum += self.palettes_dim[state.palettes[next_palette]][width_j]
+        width_sum += self.pallets_dim[state.pallets[next_pallet]][width_j]
         
         if width_sum > self.truck_width:
           # if they are too wide, sum their length
           break
         else:
-          curr_length = max(curr_length, self.palettes_dim[state.palettes[next_palette]][length_j])
-        next_palette += 1
+          curr_length = max(curr_length, self.pallets_dim[state.pallets[next_pallet]][length_j])
+        next_pallet += 1
           
-      curr_palette = next_palette
+      curr_pallet = next_pallet
       total_length += curr_length
     
     return total_length
   
   def repair_state(self, state):
-    for i in range(0, len(state.palettes)):
+    for i in range(0, len(state.pallets)):
       rotation = state.orientation[i]
       
-      if self.palettes_dim[i][rotation] > self.truck_width:
-        if self.palettes_dim[i][(rotation + 1) % 2] > self.truck_width:
+      if self.pallets_dim[i][rotation] > self.truck_width:
+        if self.pallets_dim[i][(rotation + 1) % 2] > self.truck_width:
           return None
         state.orientation[i] = (rotation + 1) % 2
         
@@ -203,12 +203,12 @@ class PalettesStackingSolver:
     # return random.uniform(0, 1) < accept_prob
     
   def sim_ann(self):    
-    # Initialize the order of palettes [0, 1 .. n]
-    top_palettes = list(range(self.palettes_num))
-    top_state = PalettesState(
-      top_palettes, 
+    # Initialize the order of pallets [0, 1 .. n]
+    top_pallets = list(range(self.pallets_num))
+    top_state = PalletsState(
+      top_pallets, 
       0,
-      [0] * self.palettes_num
+      [0] * self.pallets_num
       )
     
     # Repair state - or return None if cannot be repaired
@@ -225,7 +225,7 @@ class PalettesStackingSolver:
     temp = self.get_weights_standard_deviation(self.get_n_weights(666, top_state))
     
     # Initialize the current state
-    curr_state = PalettesState(top_state)
+    curr_state = PalletsState(top_state)
     
     # start the annealing
     while temp > self.final_temp:
@@ -259,18 +259,21 @@ class PalettesStackingSolver:
     out_arr = list()
     curr_length = 0
     curr_arr = list()
-    for i in range(0, len(state.palettes)):
-      p_id = state.palettes[i]
+    for i in range(0, len(state.pallets)):
+      p_id = state.pallets[i]
       p_rot = state.orientation[p_id]
-      rot_sym = 'r' if p_rot == 1 else ''
-      if curr_length + self.palettes_dim[p_id][p_rot] >= self.truck_width:
-        curr_length = self.palettes_dim[p_id][p_rot]
+      
+      pal_width = self.pallets_dim[p_id][p_rot]
+      pal_height = self.pallets_dim[p_id][(p_rot + 1) % 2]
+      
+      if curr_length + self.pallets_dim[p_id][p_rot] >= self.truck_width:
+        curr_length = self.pallets_dim[p_id][p_rot]
         out_arr.append(curr_arr)
         curr_arr = list()
-        curr_arr.append('{}{}'.format(p_id + 1, rot_sym))
+        curr_arr.append([pal_width, pal_height])
       else:
-        curr_arr.append('{}{}'.format(p_id + 1, rot_sym))
-        curr_length += self.palettes_dim[p_id][p_rot]
+        curr_arr.append([pal_width, pal_height])
+        curr_length += self.pallets_dim[p_id][p_rot]
     
     if len(curr_arr) != 0:
       out_arr.append(curr_arr)
@@ -278,7 +281,7 @@ class PalettesStackingSolver:
     return out_arr
     
   def run(self):
-    if (self.palettes_num == 1):
+    if (self.pallets_num == 1):
       return None, None
     top_state = self.sim_ann()
     
@@ -288,5 +291,5 @@ class PalettesStackingSolver:
     
 
 if __name__ == "__main__":
-  pssol = PalettesStackingSolver(main_palettes_dim)
+  pssol = PalletsStackingSolver(main_pallets_dim)
   pssol.run()

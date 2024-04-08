@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palettes stacking planner</title>
+  <title>Pallets Stacking Planner</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
 <body>
   <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
   <div>
-    <h1>Palettes stacking planner input</h1>
+    <h1>Pallets Stacking Planner</h1>
     <div class="container">
       <div class="controls">
         <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add</button>
         <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove</button>
       </div>
-      <form action="#" method="post" id="palettes-form">
+      <form action="#" method="post" id="pallets-form">
           <div id="formfield">
             <div class="formfield-row">
-              <p>Palette 1</p>
-              <input type="number" name="palette-1-left" class="palette-left" min="0" placeholder="width" required>
-              <input type="number" name="palette-1-right" class="palette-right" min="0" placeholder="length" required>
+              <p>Pallet 1</p>
+              <input type="number" name="pallet-1-left" class="pallet-left" min="0" placeholder="width" required>
+              <input type="number" name="pallet-1-right" class="pallet-right" min="0" placeholder="length" required>
             </div>
           </div>
           <input name="submit" type="Submit" value="Submit" id="submit">
@@ -36,8 +36,8 @@
             <p><b>{{ row }}</b></p>
           {% endfor %}
         </div>
-        <div class="palettes">
-          <small>Palettes</small><br />
+        <div class="pallets">
+          <small>pallets</small><br />
           {% for i in range(form_arr | length) %}
             <small>{{ i + 1 }}: {{ form_arr[i] }}</small><br />
           {% endfor %}
