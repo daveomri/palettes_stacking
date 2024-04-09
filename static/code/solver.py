@@ -266,7 +266,7 @@ class PalletsStackingSolver:
       pal_width = self.pallets_dim[p_id][p_rot]
       pal_height = self.pallets_dim[p_id][(p_rot + 1) % 2]
       
-      if curr_length + self.pallets_dim[p_id][p_rot] >= self.truck_width:
+      if curr_length + self.pallets_dim[p_id][p_rot] > self.truck_width:
         curr_length = self.pallets_dim[p_id][p_rot]
         out_arr.append(curr_arr)
         curr_arr = list()
