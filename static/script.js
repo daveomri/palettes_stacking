@@ -1,7 +1,7 @@
 function add(){
   let formfield = document.getElementById('formfield');
   let input_tags = formfield.getElementsByTagName('input');
-  let pallet_id = input_tags.length / 2 + 1;
+  let pallet_id = input_tags.length / 3 + 1;
 
   let formfieldRow = document.createElement('div');
   formfieldRow.setAttribute('class', 'formfield-row');
@@ -25,10 +25,19 @@ function add(){
   newFieldRight.setAttribute('placeholder', `length`);
   newFieldRight.setAttribute('required', '');
 
+  let newFieldCount = document.createElement('input');
+  newFieldCount.setAttribute('type','number');
+  newFieldCount.setAttribute('min','1');
+  newFieldCount.setAttribute('name',`pallet-${pallet_id}-count`);
+  newFieldCount.setAttribute('class','pallet-count');
+  newFieldCount.setAttribute('placeholder', `count`);
+  newFieldCount.setAttribute('required', '');
+
 
   formfieldRow.appendChild(formfieldName);
   formfieldRow.appendChild(newFieldLeft);
   formfieldRow.appendChild(newFieldRight);
+  formfieldRow.appendChild(newFieldCount);
 
   formfield.appendChild(formfieldRow);
 }

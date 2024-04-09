@@ -17,9 +17,11 @@ def home():
       
 def form_to_array(form):
   result = []
-  for i in range(1, int(((len(form) - 1) / 2) + 1)):
-    result.append([
-      int(form.get('pallet-{}-left'.format(i))),
-      int(form.get('pallet-{}-right'.format(i)))])
+  print(form)
+  for i in range(1, int(((len(form) - 1) / 3) + 1)):
+    for _ in range(0, int(form.get('pallet-{}-count'.format(i)))):
+      result.append([
+        int(form.get('pallet-{}-left'.format(i))),
+        int(form.get('pallet-{}-right'.format(i)))])
     
   return result

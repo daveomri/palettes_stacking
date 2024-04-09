@@ -12,15 +12,38 @@
     <h1>Pallets Stacking Planner</h1>
     <div class="container">
       <div class="controls">
-        <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add</button>
-        <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove</button>
+        <small><b>Controls</b></small>
+        <br style="margin-bottom: 0.5em" />
+        <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add New Pallet</button>
+        <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove Last Pallet</button>
       </div>
       <form action="#" method="post" id="pallets-form">
+          <small style="margin-bottom: 0"><b>Pallets</b></small>
+          <br />
           <div id="formfield">
             <div class="formfield-row">
               <p>Pallet 1</p>
-              <input type="number" name="pallet-1-left" class="pallet-left" min="0" placeholder="width" required>
-              <input type="number" name="pallet-1-right" class="pallet-right" min="0" placeholder="length" required>
+              <input 
+                type="number"
+                name="pallet-1-left" 
+                class="pallet-left"
+                min="0"
+                placeholder="width" 
+                required
+              ><input 
+                type="number" 
+                name="pallet-1-right" 
+                class="pallet-right" 
+                min="0"
+                placeholder="length" 
+                required
+              ><input 
+                type="number" 
+                name="pallet-1-count" 
+                class="pallet-count" 
+                min="1" 
+                placeholder="count" 
+                required>
             </div>
           </div>
           <input name="submit" type="Submit" value="Submit" id="submit">
@@ -31,7 +54,6 @@
         <div class="ouput">
           <h2>Found plan</h2>
           <p>Total length: <b>{{ length }}</b></p>
-          <i><small>r: rotation</small></i>
           {% for row in results %}
             <p><b>{{ row }}</b></p>
           {% endfor %}

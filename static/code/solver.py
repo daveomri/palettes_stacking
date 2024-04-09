@@ -218,6 +218,16 @@ class PalletsStackingSolver:
       return None
     
     top_state.weight = self.get_weight(top_state)
+    
+    # If only one pallet, return its best orientation
+    if self.pallets_num == 1:
+      if self.pallets_dim[0][0] < self.pallets_dim[0][1]:
+        top_state.orientation[0] = 1
+        
+      top_state = self.repair_state(top_state)
+      top_state.weight = self.get_weight(top_state)
+      
+      return top_state
 
     # Prepare the temperature
     steps_count = 0
@@ -281,10 +291,7 @@ class PalletsStackingSolver:
     return out_arr
     
   def run(self):
-    if (self.pallets_num == 1):
-      return None, None
     top_state = self.sim_ann()
-    
     if top_state == None:
       return None, None
     return self.to_arr(top_state), top_state.weight
