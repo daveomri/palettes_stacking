@@ -41,8 +41,8 @@ class PalletsState:
     
     
 class PalletsStackingSolver:
-  def __init__(self, pallets_dim):  
-    self.truck_width = 240
+  def __init__(self, pallets_dim, truck_width):  
+    self.truck_width = truck_width
     self.pallets_dim = pallets_dim
     self.pallets_num = len(pallets_dim)
   
@@ -141,6 +141,8 @@ class PalletsStackingSolver:
     
   """
       Method returns the total length of the palletes
+      -- doens't consider variable orderring of the palletes (each row is final, no next pallete can
+      -- fit to the possible openings left behind by previous ones)
   """
   def get_weight(self, state):
     total_length = 0

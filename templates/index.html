@@ -11,13 +11,35 @@
   <div>
     <h1>Pallets Stacking Planner</h1>
     <div class="container">
-      <div class="controls">
-        <small><b>Controls</b></small>
-        <br style="margin-bottom: 0.5em" />
-        <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add New Pallet</button>
-        <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove Last Pallet</button>
-      </div>
       <form action="#" method="post" id="pallets-form">
+          <div id="truck-width">
+            <div class="formfield-row">
+              <p>Truck width</p>
+              {% if truck_width %}
+                <input 
+                  type="number"
+                  name="truck-width"
+                  min="0"
+                  value="{{truck_width}}"
+                  required>
+              {% else %}
+              <input 
+                type="number"
+                name="truck-width"
+                min="0"
+                value="240"
+                required>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="controls">
+            <small><b>Controls</b></small>
+            <br style="margin-bottom: 0.5em" />
+            <button class="add" onclick="add()"><i class="fa fa-plus"></i>Add New Pallet</button>
+            <button class="remove" onclick="remove()"><i class="fa fa-minus"></i>Remove Last Pallet</button>
+          </div>
+
           <small style="margin-bottom: 0"><b>Pallets</b></small>
           <br />
           <div id="formfield">
@@ -53,6 +75,7 @@
       {% if results != None %}
         <div class="ouput">
           <h2>Found plan</h2>
+          <small>Truck width: <b>{{ truck_width }}</b></small>
           <p>Total length: <b>{{ length }}</b></p>
           {% for row in results %}
             <p><b>{{ row }}</b></p>
