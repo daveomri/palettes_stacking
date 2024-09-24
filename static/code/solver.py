@@ -4,17 +4,15 @@
 # ---
 # by David Omrai
 # ---
-# some description
+# some description - todo
 
 import random
 from datetime import datetime
 import math
 import copy
-# import time
-# import logging
 
 # Change the dimentions and number of pallets
-main_pallets_dim = [
+main_pallets_dim: [[int]] = [
   [150, 110],
   [125, 85],
   [125, 105],
@@ -41,19 +39,19 @@ class PalletsState:
     
     
 class PalletsStackingSolver:
-  def __init__(self, pallets_dim, truck_width):  
-    self.truck_width = truck_width
-    self.pallets_dim = pallets_dim
-    self.pallets_num = len(pallets_dim)
+  def __init__(self, pallets_dim: int, truck_width: int):  
+    self.truck_width: int = truck_width
+    self.pallets_dim: int = pallets_dim
+    self.pallets_num: int = len(pallets_dim)
   
     # simulated annealing params
     random.seed(datetime.now().timestamp())
     
     # Algorithm params
-    self.init_temp = 50.0
-    self.final_temp = 0.05
-    self.iter_num = self.pallets_num * 90 # force
-    self.cool_factor = 0.95
+    self.init_temp: float = 50.0
+    self.final_temp: float = 0.05
+    self.iter_num: int = self.pallets_num * 90 # force
+    self.cool_factor: float = 0.95
     
     # self.log = logging.getLogger(__name__)
     # self.log.setLevel(logging.INFO)
@@ -65,21 +63,21 @@ class PalletsStackingSolver:
 
     
   # Setters
-  def set_init_temp(self, init_temp):
+  def set_init_temp(self, init_temp: float):
     self.init_temp = init_temp
     
-  def set_final_temp(self, final_temp):
+  def set_final_temp(self, final_temp: float):
     self.final_temp = final_temp
     
-  def set_iter_num(self, iter_num):
+  def set_iter_num(self, iter_num: int):
     self.iter_num = iter_num
     
-  def set_cool_factor(self, cool_factor):
+  def set_cool_factor(self, cool_factor: float):
     self.cool_factor = cool_factor
     
   # - - - - - - - - - - - - - - - - - - - -
   
-  def get_n_weights(self, n_weights, state):
+  def get_n_weights(self, n_weights: int, state: [[int]]) -> [[int]]:
     weights = list()
     
     for _ in range(0, n_weights):
@@ -88,10 +86,10 @@ class PalletsStackingSolver:
     return sorted(weights)
   
   
-  """
-      sx = ( Sum_[i=1, n]((x_i - mean_x)^2) / (n - 1) )^0.5
-  """
   def get_weights_standard_deviation(self, weights):
+    """
+      sx = ( Sum_[i=1, n]((x_i - mean_x)^2) / (n - 1) )^0.5
+    """
     mean_w = sum(weights) / len(weights)
     numerator = 0
     denominator = len(weights) - 1
@@ -139,14 +137,14 @@ class PalletsStackingSolver:
     
     return new_state
     
-  """
+  def get_weight(self, state: [[int]]) -> int:
+    """
       Method returns the total length of the palletes
       -- doens't consider variable orderring of the palletes (each row is final, no next pallete can
       -- fit to the possible openings left behind by previous ones)
-  """
-  def get_weight(self, state):
-    total_length = 0
-    curr_pallet = 0
+    """
+    total_length: int = 0
+    curr_pallet: int = 0
     while curr_pallet != len(state.pallets):
       width_1 = state.orientation[state.pallets[curr_pallet]]
       length_1 = (width_1 + 1) % 2
@@ -177,18 +175,42 @@ class PalletsStackingSolver:
     
     return total_length
   
-  def repair_state(self, state):
+  def repair_state(self, state) -> [[int]]:
+    """
+        Repair palletes, where the dimension of palletes
+        cannot fit into a truck. In this case rotate the pallete.
+
+    Args:
+        state ([[int]]): current state of palletes
+
+    Returns:
+        [[int]]: repaired state
+        None: if the state cannot be fixed
+    """
     for i in range(0, len(state.pallets)):
-      rotation = state.orientation[i]
+      rotation: int = state.orientation[i]
       
       if self.pallets_dim[i][rotation] > self.truck_width:
         if self.pallets_dim[i][(rotation + 1) % 2] > self.truck_width:
+          # if none dimension of pallete is able to fit, return null
           return None
         state.orientation[i] = (rotation + 1) % 2
         
     return state
     
-  def accept_worse(self, curr_state_weight, old_state_weight, temp):
+  def accept_worse(self, curr_state_weight: int, old_state_weight: int, temp: float) -> bool:
+    """
+        Function decides whether to accept the worse solution
+        based on the probability and temperature.
+
+    Args:
+        curr_state_weight (int): Weight of the current state
+        old_state_weight (int): Weight of the previous state
+        temp (float): Temperature of SA
+
+    Returns:
+        bool: True if to accept, False otherwise
+    """
     if temp == 0:
       return False
     
@@ -196,11 +218,11 @@ class PalletsStackingSolver:
     # accept_prob = 1 / (1 + math.exp( delta / temp))
     
     # normalise the weights
-    eps =  old_state_weight - curr_state_weight
+    eps: int =  old_state_weight - curr_state_weight
     
     try: 
       return random.uniform(0, 1) < 1 / (1 + math.exp(abs(eps) / temp))
-    except:
+    except ZeroDivisionError:
       return False
     # return random.uniform(0, 1) < accept_prob
     
