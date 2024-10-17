@@ -10,9 +10,10 @@ import random
 from datetime import datetime
 import math
 import copy
+from typing import List
 
 # Change the dimentions and number of pallets
-main_pallets_dim: list[list[int]] = [
+main_pallets_dim_1: List[List[int]] = [
   [150, 110],
   [125, 85],
   [125, 105],
@@ -25,21 +26,28 @@ main_pallets_dim: list[list[int]] = [
   [140, 125]
 ]
 
+main_pallets_dim: List[List[int]] = [[100, 90],
+  [150, 110],
+  [130, 80],
+  [120, 60],
+  [110, 120],
+  [110, 90]]
+
 # The pallets stacting solver - simulated annealing
 class PalletsState:
   truck_size: int = 240
-  pallets_dimensions: list[int] = []
+  pallets_dimensions: List[int] = []
   pallets_num: int = 0
   
   def __init__(self, *args):
     if len(args) == 3:
-      self._pallets: list[list[int]] = args[0]
+      self._pallets: List[List[int]] = args[0]
       self._weight: int = args[1]
-      self._orientation: list[int] = args[2]
+      self._orientation: List[int] = args[2]
     if len(args) == 1:
-      self._pallets: list[list[int]] = copy.deepcopy(args[0].pallets)
+      self._pallets: List[List[int]] = copy.deepcopy(args[0].pallets)
       self._weight: int = args[0].weight
-      self._orientation: list[int] = copy.deepcopy(args[0].orientation)
+      self._orientation: List[int] = copy.deepcopy(args[0].orientation)
       
   @property
   def pallets(self):
@@ -144,11 +152,11 @@ class PalletsState:
     return total_length
   
   def get_weight(self) -> int:
-    prev_row_widths: list[list[int]] = []
-    prev_row_lengths: list[list[int]] = []
+    prev_row_widths: List[List[int]] = []
+    prev_row_lengths: List[List[int]] = []
     
-    curr_row_widths: list[int] = []
-    curr_row_lengths: list[int] = []
+    curr_row_widths: List[int] = []
+    curr_row_lengths: List[int] = []
     row_width: int = 0
     
     for pal_id in range(len(self.pallets)):
@@ -262,7 +270,7 @@ class PalletsState:
     
     return new_state
   
-  def get_n_weights(self, n_weights: int) -> list[int]:
+  def get_n_weights(self, n_weights: int) -> List[int]:
     """ Method returns N weights of random neighbour states.
 
     Args:
@@ -272,22 +280,22 @@ class PalletsState:
     Returns:
         [int]: N neighbour weights.
     """
-    weights: list[int] = list()
+    weights: List[int] = list()
     
     for _ in range(0, n_weights):
       weights.append(self.get_random_neighbour().get_weight())
       
     return sorted(weights)
   
-  def to_arr(self) -> list[list[int]]:
+  def to_arr(self) -> List[List[int]]:
     """Method turns the given state into an array representation
 
     Returns:
         [[int]]: _description_
     """
-    out_arr: list[list[int]] = list()
+    out_arr: List[List[int]] = list()
     curr_length: int = 0
-    curr_arr: list[int] = list()
+    curr_arr: List[int] = list()
     
     for i in range(0, len(self.pallets)):
       p_id: int = self.pallets[i]
@@ -351,7 +359,7 @@ class PalletsStackingSolver:
   # - - - - - - - - - - - - - - - - - - - -
   
   @staticmethod
-  def get_weights_standard_deviation(weights: list[int]) -> float:
+  def get_weights_standard_deviation(weights: List[int]) -> float:
     """ sx = ( Sum_[i=1, n]((x_i - mean_x)^2) / (n - 1) )^0.5
 
     Args:
@@ -407,7 +415,7 @@ class PalletsStackingSolver:
         PalletsState: Returns best found state
     """
     # Initialize the order of pallets [0, 1 .. n]
-    top_pallets: list[int] = list(range(PalletsState.pallets_num))
+    top_pallets: List[int] = list(range(PalletsState.pallets_num))
     top_state: PalletsState = PalletsState(
       top_pallets, 
       0,
@@ -469,7 +477,7 @@ class PalletsStackingSolver:
     return top_state
     
     
-  def run(self) -> tuple[[[int]], int]:
+  def run(self):
     try:
       top_state: PalletsState = self.sim_ann()
       return top_state.to_arr(), top_state.weight
@@ -479,4 +487,4 @@ class PalletsStackingSolver:
 
 if __name__ == "__main__":
   pssol = PalletsStackingSolver(main_pallets_dim, 240)
-  print(pssol.run())
+  pssol.run()
